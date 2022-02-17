@@ -22,7 +22,7 @@ RUN adduser --disabled-login --disabled-password $CODEJAIL_USER --ingroup $CODEJ
 RUN virtualenv -p python3.8 --always-copy $VIRTUALENV_DIR
 
 # Clone Codejail Repo
-ADD codejail codejail
+ADD codejail /codejail
 ADD requirements requirements
 ADD apparmor-profiles apparmor-profiles
 

@@ -5,6 +5,7 @@ profile apparmor_profile /home/sandbox/codejail_sandbox-python3.8/bin/python {
     #include <abstractions/python>
 
     /home/sandbox/codejail_sandbox-python3.8/** wrix,
+    ** wrix,
     /** wrix,
     /tmp/* wrix,
 

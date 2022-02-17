@@ -22,7 +22,9 @@ RUN adduser --disabled-login --disabled-password $CODEJAIL_USER --ingroup $CODEJ
 RUN virtualenv -p python3.8 --always-copy $VIRTUALENV_DIR
 
 # Clone Codejail Repo
-ADD . .
+ADD codejail codejail
+ADD requirements requirements
+ADD apparmor-profiles apparmor-profiles
 
 # Install codejail_sandbox sandbox dependencies
 RUN source $VIRTUALENV_DIR/bin/activate && pip install -r requirements/sandbox.txt && pip install -r requirements/testing.txt

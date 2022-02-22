@@ -26,6 +26,7 @@ RUN chgrp $CODEJAIL_GROUP $VIRTUALENV_DIR
 
 # Clone Codejail Repo
 ADD . ./codejail
+WORKDIR /codejail
 
 RUN pip install -r requirements/tox.txt
 RUN pip install -r requirements/testing.txt

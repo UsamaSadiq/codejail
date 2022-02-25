@@ -1,0 +1,41 @@
+name: Apparmor CI
+
+on:
+  pull_request:
+
+jobs:
+  run_apparmor:
+    name: AppArmor GitHub Selfhosted CI
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: [3.8]
+        toxenv: [py38]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: build Image from Dockerfile
+        run: docker build --tag codejail_apparmor .
+
+      - name: Parse custom apparmor profile
+        run: sudo apparmor_parser -r -W apparmor-profiles/home.sandbox.codejail_sandbox-python3.8.bin.python
+
+      - name: Check apparmor profiles
+        run: sudo aa-status
+
+      - name: Run container with custom apparmor profile
+        run: |
+          docker run --name=codejail --privileged -d --security-opt apparmor=apparmor_profile codejail_apparmor tail -f /dev/null
+
+      - name: Run Tests
+        env:
+          CODEJAIL_TEST_USER: "sandbox"
+          CODEJAIL_TEST_VENV: "/home/sandbox/codejail_sandbox-python3.8"
+        run: |
+          sudo docker exec -t codejail bash -c 'export CODEJAIL_SANDBOX_CALLER="ubuntu" && export CODEJAIL_TEST_USER="sandbox" && CODEJAIL_TEST_VENV="/home/sandbox/codejail_sandbox-python3.8" && source /venv/bin/activate && make clean && make test_no_proxy'
